@@ -1,0 +1,45 @@
+@Cooperative_HostAddress = https://localhost:7267
+
+GET {{Cooperative_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{Cooperative_HostAddress}}/api/employees
+
+###
+
+POST {{Cooperative_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "123-456-7890",
+  "factory": "Yale 5"
+}
+
+###
+
+@id=1
+PUT {{Cooperative_HostAddress}}/api/employees/{{id}}
+Content-Type: application/json
+
+{
+  "name": "John Doe 4",
+  "email": "john.doe4@example.com",
+  "phoneNumber": "123-456-7890",
+  "factory": "Yale 25"
+}
+
+###
+
+@id=2
+DELETE {{Cooperative_HostAddress}}/api/employees/{{id}}
+
+###
+
+@id=1
+GET {{Cooperative_HostAddress}}/api/employees/{{id}}
+
+###
