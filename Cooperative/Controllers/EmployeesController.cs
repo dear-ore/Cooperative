@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Cooperative.Models;
 using Cooperative.Data;
+using Cooperative.DTOs;
 
 namespace Cooperative.Controllers
 {
@@ -34,7 +35,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddEmployees([FromBody] Employee newEmployee)
+        public ActionResult AddEmployees([FromBody] CreateEmployeeDto newEmployee)
         {
             var employeeObj = new Employee();
             employeeObj.Name = newEmployee.Name;
@@ -43,18 +44,18 @@ namespace Cooperative.Controllers
             employeeObj.Factory = newEmployee.Factory;
             _context.Employees.Add(employeeObj);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetEmployeesById), new { id = newEmployee.Id }, newEmployee);
+            return CreatedAtAction(nameof(GetEmployeesById), new { id = employeeObj.Id }, employeeObj);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateEmployees(int id, [FromBody] Employee updatedEmployee)
+        public ActionResult UpdateEmployees(int id, [FromBody] EditEmployeeDto updatedEmployee)
         {
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
             }
-
+           
             employee.Name = updatedEmployee.Name;
             employee.Email = updatedEmployee.Email;
             employee.PhoneNumber = updatedEmployee.PhoneNumber;
