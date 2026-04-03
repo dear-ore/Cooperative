@@ -34,15 +34,20 @@ namespace Cooperative.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddEmployees([FromBody] Employees newEmployee)
+        public ActionResult AddEmployees([FromBody] Employee newEmployee)
         {
-            _context.Employees.Add(newEmployee);
+            var employeeObj = new Employee();
+            employeeObj.Name = newEmployee.Name;
+            employeeObj.Email = newEmployee.Email;
+            employeeObj.PhoneNumber = newEmployee.PhoneNumber;
+            employeeObj.Factory = newEmployee.Factory;
+            _context.Employees.Add(employeeObj);
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetEmployeesById), new { id = newEmployee.Id }, newEmployee);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateEmployees(int id, [FromBody] Employees updatedEmployee)
+        public ActionResult UpdateEmployees(int id, [FromBody] Employee updatedEmployee)
         {
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
