@@ -1,24 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Cooperative.Models;
+using Cooperative.Data;
 
 namespace Cooperative.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
-    {
-        private static List<Employees> employees = new List<Employees>
+    {        
+        private readonly CooperativeDbContext _context;
+        public EmployeesController(CooperativeDbContext context)
         {
-            new Employees { Id = 1, Name = "Afolabi Bukunmi", Email = "afolabi@company.com", PhoneNumber = "1234567890", Factory = "Yale 1" },
-            new Employees { Id = 2, Name = "Desola Jane", Email = "desola@company.com", PhoneNumber = "0987654321", Factory = "Yale 2" },
-            new Employees { Id = 3, Name = "Oluwaseun Ade", Email = "ade@company.com", PhoneNumber = "5551234567", Factory = "Yale 3" },
-        };
+            _context = context;
+        }
 
         [HttpGet]
         public ActionResult GetAllEmployees()
         {
-            return Ok(employees);
+            var response = _context.Employees;
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
