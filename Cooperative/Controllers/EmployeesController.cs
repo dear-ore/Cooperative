@@ -19,7 +19,12 @@ namespace Cooperative.Controllers
         [HttpGet]
         public ActionResult GetAllEmployees()
         {
-            var response = _context.Employees;
+            var response = _context.Employees.Select(e => new EmployeeResponseDto
+            {
+                Name = e.Name,
+                PhoneNumber = e.PhoneNumber,
+                Factory = e.Factory
+            }).ToList();
             return Ok(response);
         }
 
@@ -31,7 +36,14 @@ namespace Cooperative.Controllers
             {
                 return NotFound();
             }
-            return Ok(employee);
+
+            var response = new EmployeeResponseDto
+            {
+                Name = employee.Name,
+                PhoneNumber = employee.PhoneNumber,
+                Factory = employee.Factory
+            };
+            return Ok(response);
         }
 
         [HttpPost]
