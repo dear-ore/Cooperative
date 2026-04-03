@@ -25,7 +25,7 @@ namespace Cooperative.Controllers
         [HttpGet("{id}")]
         public ActionResult GetEmployeesById(int id)
         {
-            var employee = employees.FirstOrDefault(e => e.Id == id);
+            var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -36,15 +36,15 @@ namespace Cooperative.Controllers
         [HttpPost]
         public ActionResult AddEmployees([FromBody] Employees newEmployee)
         {
-            newEmployee.Id = employees.Count + 1;
-            employees.Add(newEmployee);
+            _context.Employees.Add(newEmployee);
+            _context.SaveChanges();
             return CreatedAtAction(nameof(GetEmployeesById), new { id = newEmployee.Id }, newEmployee);
         }
 
         [HttpPut("{id}")]
         public ActionResult UpdateEmployees(int id, [FromBody] Employees updatedEmployee)
         {
-            var employee = employees.FirstOrDefault(e => e.Id == id);
+            var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -54,18 +54,20 @@ namespace Cooperative.Controllers
             employee.Email = updatedEmployee.Email;
             employee.PhoneNumber = updatedEmployee.PhoneNumber;
             employee.Factory = updatedEmployee.Factory;
+            _context.SaveChanges();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteEmployees(int id)
         {
-            var employee = employees.FirstOrDefault(e => e.Id == id);
+            var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
             }
-            employees.Remove(employee);
+            _context.Employees.Remove(employee);
+            _context.SaveChanges();
             return NoContent();
         }   
     }
