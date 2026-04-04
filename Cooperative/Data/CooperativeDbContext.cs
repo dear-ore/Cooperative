@@ -9,7 +9,7 @@ namespace Cooperative.Data
         public CooperativeDbContext(DbContextOptions<CooperativeDbContext> options) : base(options) { }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Committee> Committees { get; set; }
-        public DbSet<Executives> Executives { get; set; }
+        public DbSet<Executive> Executives { get; set; }
         public DbSet<Cooperator> Cooperators { get; set; }
     }
 }

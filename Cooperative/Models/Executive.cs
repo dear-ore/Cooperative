@@ -1,6 +1,6 @@
 ﻿namespace Cooperative.Models
 {
-    public class Executives
+    public class Executive
     {
         public int Id { get; set; }
         public string Name { get; set; }
