@@ -19,7 +19,14 @@ namespace Cooperative.Controllers
         [HttpGet]
         public ActionResult GetAllExecutives()
         {
-            var response = _context.Executives.ToList();
+            var response = _context.Executives.Select(e => new ExecutiveResponseDto
+            {
+                Name = e.Name,
+                Email = e.Email,
+                PostHeld = e.PostHeld,
+                PhoneNumber = e.PhoneNumber,
+
+            }).ToList();
             return Ok(response);
         }
 
@@ -31,7 +38,16 @@ namespace Cooperative.Controllers
             {
                 return NotFound();
             }
-            return Ok(executive);
+
+            var response = new ExecutiveResponseDto
+            {
+                Name = executive.Name,
+                Email = executive.Email,
+                PostHeld = executive.PostHeld,
+                PhoneNumber = executive.PhoneNumber
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -41,13 +57,14 @@ namespace Cooperative.Controllers
             executiveObj.Name = newExecutive.Name;
             executiveObj.Email = newExecutive.Email;
             executiveObj.PhoneNumber = newExecutive.PhoneNumber;
+            executiveObj.PostHeld = newExecutive.PostHeld;
             _context.Executives.Add(executiveObj);
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetExecutivesById), new { id = executiveObj.Id }, executiveObj);
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditExecutive([FromBody] AddExecutivesDto editedExecutive, int id)
+        public ActionResult EditExecutive(int id, [FromBody] AddExecutivesDto editedExecutive)
         {
             var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
             if(executive == null)
@@ -55,11 +72,10 @@ namespace Cooperative.Controllers
                 return NotFound();
             }
 
-            var executiveObj = new Executive();
-            executiveObj.Name = editedExecutive.Name;
-            executiveObj.PhoneNumber = editedExecutive.PhoneNumber;
-            executiveObj.Email = editedExecutive.Email;
-            executiveObj.PostHeld = editedExecutive.PostHeld;
+            executive.Name = editedExecutive.Name;
+            executive.PhoneNumber = editedExecutive.PhoneNumber;
+            executive.Email = editedExecutive.Email;
+            executive.PostHeld = editedExecutive.PostHeld;
             _context.SaveChanges();
             return NoContent();
         }
@@ -77,6 +93,5 @@ namespace Cooperative.Controllers
             _context.SaveChanges();
             return NoContent();
         }
-
     }
 }
