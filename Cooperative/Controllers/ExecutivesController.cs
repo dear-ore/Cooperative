@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Cooperative.Models;
 using Cooperative.Data;
+using Cooperative.DTOs;
 
 namespace Cooperative.Controllers
 {
@@ -34,8 +35,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpPost]
-
-        public ActionResult AddNewExecutives([FromBody] Executive newExecutive)
+        public ActionResult AddNewExecutives([FromBody] AddExecutivesDto newExecutive)
         {
             var executiveObj = new Executive();
             executiveObj.Name = newExecutive.Name;
@@ -45,5 +45,38 @@ namespace Cooperative.Controllers
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetExecutivesById), new { id = executiveObj.Id }, executiveObj);
         }
+
+        [HttpPut("{id}")]
+        public ActionResult EditExecutive([FromBody] AddExecutivesDto editedExecutive, int id)
+        {
+            var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
+            if(executive == null)
+            {
+                return NotFound();
+            }
+
+            var executiveObj = new Executive();
+            executiveObj.Name = editedExecutive.Name;
+            executiveObj.PhoneNumber = editedExecutive.PhoneNumber;
+            executiveObj.Email = editedExecutive.Email;
+            executiveObj.PostHeld = editedExecutive.PostHeld;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id})")]
+        public ActionResult DeleteExecutive(int id)
+        {
+            var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
+            if(executive == null)
+            {
+                return NotFound();
+            }
+
+            _context.Executives.Remove(executive);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
     }
 }
