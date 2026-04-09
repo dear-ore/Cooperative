@@ -17,7 +17,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAllEmployees()
+        public async Task<ActionResult> GetAllEmployees()
         {
             var response = _context.Employees.Select(e => new EmployeeResponseDto
             {
@@ -29,7 +29,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetEmployeesById(int id)
+        public async Task<ActionResult> GetEmployeesById(int id)
         {
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
@@ -47,20 +47,20 @@ namespace Cooperative.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddEmployees([FromBody] CreateEmployeeDto newEmployee)
+        public async Task<ActionResult> AddEmployees([FromBody] CreateEmployeeDto newEmployee)
         {
             var employeeObj = new Employee();
             employeeObj.Name = newEmployee.Name;
             employeeObj.Email = newEmployee.Email;
             employeeObj.PhoneNumber = newEmployee.PhoneNumber;
             employeeObj.Factory = newEmployee.Factory;
-            _context.Employees.Add(employeeObj);
-            _context.SaveChanges();
+            await _context.Employees.AddAsync(employeeObj);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetEmployeesById), new { id = employeeObj.Id }, employeeObj);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateEmployees(int id, [FromBody] EditEmployeeDto updatedEmployee)
+        public async Task<ActionResult> UpdateEmployees(int id, [FromBody] EditEmployeeDto updatedEmployee)
         {
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
@@ -72,12 +72,12 @@ namespace Cooperative.Controllers
             employee.Email = updatedEmployee.Email;
             employee.PhoneNumber = updatedEmployee.PhoneNumber;
             employee.Factory = updatedEmployee.Factory;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteEmployees(int id)
+        public async Task<ActionResult> DeleteEmployees(int id)
         {
             var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
@@ -85,7 +85,7 @@ namespace Cooperative.Controllers
                 return NotFound();
             }
             _context.Employees.Remove(employee);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }   
     }
