@@ -17,7 +17,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAllExecutives()
+        public async Task<ActionResult> GetAllExecutives()
         {
             var response = _context.Executives.Select(e => new ExecutiveResponseDto
             {
@@ -31,7 +31,7 @@ namespace Cooperative.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetExecutivesById(int id)
+        public async Task<ActionResult> GetExecutivesById(int id)
         {
             var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
             if (executive == null)
@@ -51,20 +51,20 @@ namespace Cooperative.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddNewExecutives([FromBody] AddExecutivesDto newExecutive)
+        public async Task<ActionResult> AddNewExecutives([FromBody] AddExecutivesDto newExecutive)
         {
             var executiveObj = new Executive();
             executiveObj.Name = newExecutive.Name;
             executiveObj.Email = newExecutive.Email;
             executiveObj.PhoneNumber = newExecutive.PhoneNumber;
             executiveObj.PostHeld = newExecutive.PostHeld;
-            _context.Executives.Add(executiveObj);
-            _context.SaveChanges();
+            await _context.Executives.AddAsync(executiveObj);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetExecutivesById), new { id = executiveObj.Id }, executiveObj);
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditExecutive(int id, [FromBody] AddExecutivesDto editedExecutive)
+        public async Task<ActionResult> EditExecutive(int id, [FromBody] AddExecutivesDto editedExecutive)
         {
             var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
             if(executive == null)
@@ -76,12 +76,12 @@ namespace Cooperative.Controllers
             executive.PhoneNumber = editedExecutive.PhoneNumber;
             executive.Email = editedExecutive.Email;
             executive.PostHeld = editedExecutive.PostHeld;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id})")]
-        public ActionResult DeleteExecutive(int id)
+        public async Task<ActionResult> DeleteExecutive(int id)
         {
             var executive = _context.Executives.FirstOrDefault(e => e.Id == id);
             if(executive == null)
@@ -90,7 +90,7 @@ namespace Cooperative.Controllers
             }
 
             _context.Executives.Remove(executive);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }
