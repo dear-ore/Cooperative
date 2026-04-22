@@ -72,6 +72,11 @@ namespace Cooperative.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCooperatorById), new { id = cooperatorObj.Id }, cooperatorObj);
         }
+
+        public void RegisterDeduction(string deductionType, int amount, string? note)
+        {
+
+        }
     
     }
 }

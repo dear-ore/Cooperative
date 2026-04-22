@@ -8,8 +8,14 @@ namespace Cooperative.Models
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+
+        [Required]
         public string CoopNumber { get; set; }
+
+        [Required]
         public string StaffNumber { get; set; }
+
+        [Required]
         public string Factory { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]

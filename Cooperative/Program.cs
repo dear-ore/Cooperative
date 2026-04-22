@@ -32,4 +32,10 @@ app.MapControllers();
 
 app.Run();
 
-
+//Next steps
+//Use data annotation for input validation ✅
+//Convert to async programming ✅
+//JWT and authorization with identity and microsoft entra
+//Assign Roles and perform operations based on those roles
+//Figure out the logic for cooperators
+//Use StaffNumber as primary key
