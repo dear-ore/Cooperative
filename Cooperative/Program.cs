@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Cooperative.Data;
 using Scalar.AspNetCore;
+using Cooperative.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddOpenApi();
-
+builder.Services.AddScoped<IDebtService, DebtService>();
 
 builder.Services.AddDbContext<CooperativeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -32,10 +33,4 @@ app.MapControllers();
 
 app.Run();
 
-//Next steps
-//Use data annotation for input validation ✅
-//Convert to async programming ✅
-//JWT and authorization with identity and microsoft entra
-//Assign Roles and perform operations based on those roles
-//Figure out the logic for cooperators
-//Use StaffNumber as primary key
+
