@@ -11,5 +11,6 @@ namespace Cooperative.Data
         public DbSet<Committee> Committees { get; set; }
         public DbSet<Executive> Executives { get; set; }
         public DbSet<Cooperator> Cooperators { get; set; }
+        public DbSet<Loan> Loans { get; set;  }
     }
 }
