@@ -12,7 +12,7 @@ namespace Cooperative.Services
         {
             _context = context; 
         }
-        public async Task<ServiceResult> TakeLoan(decimal amount, int cooperatorId)
+        public async Task<ServiceResult> TakeLoan(decimal amount, int cooperatorId, TransactionType transactionType)
         {
             var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
             if (cooperator == null)
@@ -62,7 +62,8 @@ namespace Cooperative.Services
                 TotalRepayable = totalRepayable,
                 MonthlyInstallment = monthlyRepayment,
                 DateTaken = DateTime.Now,
-                InstallmentsRemaining = 11
+                InstallmentsRemaining = 11,
+                LoanTransactionType = transactionType
             };
             cooperator.LoanBalance = -totalRepayable;
             await _context.Loans.AddAsync(loan);

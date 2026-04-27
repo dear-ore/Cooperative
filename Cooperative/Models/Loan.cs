@@ -2,9 +2,15 @@
 
 namespace Cooperative.Models
 {
+    public enum TransactionType
+    {
+        BankTransfer,
+        Cheque
+    }
     public class Loan
     {
         public int Id { get; set; }
+        public TransactionType LoanTransactionType { get; set; }
         public int CooperatorId { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
