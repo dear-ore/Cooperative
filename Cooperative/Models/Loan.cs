@@ -1,12 +1,21 @@
-﻿namespace Cooperative.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cooperative.Models
 {
     public class Loan
     {
         public int Id { get; set; }
         public int CooperatorId { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal PrincipalAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal TotalRepayable{ get; set; }
-        public int MonthlyInstallment { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal MonthlyInstallment { get; set; }
+
         public DateTime DateTaken { get; set; }
         public int InstallmentsRemaining { get; set; }
     }
