@@ -119,9 +119,48 @@ namespace Cooperative.Services
                 Message = "Food recorded successfully!"
             };
         }
-        public async Task<ServiceResult> TakeSouvenir(decimal amount, int cooperatorId, int numberOfInstallments)
+        public async Task<ServiceResult> TakeSouvenir(decimal amount, int cooperatorId, string description, int numberofInstallments)
         {
-            throw new NotImplementedException();
+            var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
+            if (cooperator == null)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Cooperator not found."
+                };
+            }
+
+            if (cooperator.Status != CooperatorStatus.Active)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Only active cooperators can take souvenir."
+                };
+            }
+
+            decimal monthlyInstallment = amount / numberofInstallments;
+
+            var souvenir = new Souvenir
+            {
+                CooperatorId = cooperatorId,
+                Amount = amount,
+                Description = description,
+                NumberOfInstallments = numberofInstallments,
+                DateTaken = DateTime.Now,
+                MonthlyInstallment = monthlyInstallment,
+            };
+
+            cooperator.SouvenirBalance = -amount;
+            await _context.AddAsync(souvenir);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResult
+            {
+                IsSuccess = true,
+                Message = "Souvenir recorded successfully!"
+            };
         }
     }
 }
