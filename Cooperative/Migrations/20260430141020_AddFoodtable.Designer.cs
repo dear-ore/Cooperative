@@ -4,6 +4,7 @@ using Cooperative.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cooperative.Migrations
 {
     [DbContext(typeof(CooperativeDbContext))]
-    partial class CooperativeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430141020_AddFoodtable")]
+    partial class AddFoodtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,9 +217,6 @@ namespace Cooperative.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("NumberOfInstallments")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReceiptNumber")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

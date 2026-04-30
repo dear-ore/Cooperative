@@ -75,9 +75,49 @@ namespace Cooperative.Services
                 Message = "Loan taken successfully."
             };
         }
-        public async Task<ServiceResult> TakeFood(decimal amount, int cooperatorId)
+        public async Task<ServiceResult> TakeFood(decimal amount, int cooperatorId, int numberofinstallments, string description, int receiptNumber)
         {
-            throw new NotImplementedException();
+            var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
+            if(cooperator == null)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Cooperator not found."
+                };
+            }
+
+            if(cooperator.Status != CooperatorStatus.Active)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Only active cooperators can take food."
+                };
+            }
+
+            decimal monthlyInstallment = amount / numberofinstallments;
+
+            var food = new Food
+            {
+                CooperatorId = cooperatorId,
+                Amount = amount,
+                Description = description,
+                NumberOfInstallments = numberofinstallments,
+                DateTaken = DateTime.Now,
+                MonthlyInstallment = monthlyInstallment,
+                ReceiptNumber = receiptNumber
+            };
+
+            cooperator.FoodBalance = -amount;
+            await _context.AddAsync(food);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResult
+            {
+                IsSuccess = true,
+                Message = "Food recorded successfully!"
+            };
         }
         public async Task<ServiceResult> TakeSouvenir(decimal amount, int cooperatorId, int numberOfInstallments)
         {
