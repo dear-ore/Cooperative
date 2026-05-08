@@ -143,5 +143,108 @@ namespace CooperativeTests
             //Assert
             Assert.True(loan.IsSuccess);
         }
+
+        [Fact]
+        public async Task TakeFood_IsSuccessIsFalse_WhenCooperator_NotFound()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+
+            //Act
+            var food = await service.TakeFood(27000, 23, 3, "Dec 25 Food", 75764);
+
+            //Assert
+            Assert.False(food.IsSuccess);
+            Assert.Equal("Cooperator not found.", food.Message);
+        }
+
+        [Fact]
+        public async Task TakeFood_IsSuccessIsFalse_WhenCooperator_NotActive()
+        {
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(status: CooperatorStatus.Pending);
+
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var food = await service.TakeFood(27000, cooperator.Id, 3, "Dec 25 Food", 75764);
+
+            //Assert
+            Assert.False(food.IsSuccess);
+            Assert.Equal("Only active cooperators can take food.", food.Message);
+            Assert.Equal<CooperatorStatus>(CooperatorStatus.Pending, cooperator.Status);
+        }
+
+        [Fact]
+        public async Task TakeFood_IsSuccessIsTrue_WhenAllConditionsAreMet()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var food = await service.TakeFood(27000, cooperator.Id, 3, "Dec 25 Food", 75764);
+
+            //Assert
+            Assert.True(food.IsSuccess);
+        }
+
+        [Fact]
+        public async Task TakeSouvenir_IsSuccessIsFalse_WhenCooperator_NotFound()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+
+            //Act
+            var souvenir = await service.TakeSouvenir(20000, 23, "AGM 25 Souvenir", 3);
+
+            //Assert
+            Assert.False(souvenir.IsSuccess);
+            Assert.Equal("Cooperator not found.", souvenir.Message);
+        }
+
+
+        [Fact]
+        public async Task TakeSouvenir_IsSuccessIsFalse_WhenCooperator_NotActive()
+        {
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(status: CooperatorStatus.Pending);
+
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var souvenir = await service.TakeSouvenir(20000, cooperator.Id, "AGM 25 Souvenir", 3);
+
+            //Assert
+            Assert.False(souvenir.IsSuccess);
+            Assert.Equal("Only active cooperators can take souvenir.", souvenir.Message);
+            Assert.Equal<CooperatorStatus>(CooperatorStatus.Pending, cooperator.Status);
+        }
+
+        [Fact]
+        public async Task TakeSouvenir_IsSuccessIsTrue_WhenAllConditionsAreMet()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var souvenir = await service.TakeSouvenir(20000, cooperator.Id, "AGM 25 Souvenir", 2);
+
+            //Assert
+            Assert.True(souvenir.IsSuccess);
+        }
     }
 }
