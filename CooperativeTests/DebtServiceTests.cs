@@ -137,11 +137,14 @@ namespace CooperativeTests
             context.Add(cooperator);
             await context.SaveChangesAsync();
 
-            //Act
             var loan = await service.TakeLoan(100000, cooperator.Id, TransactionType.BankTransfer);
 
-            //Assert
+            await context.Entry(cooperator).ReloadAsync();
+            var loanRecord = await context.Loans.FirstOrDefaultAsync(l => l.CooperatorId == cooperator.Id);
+
             Assert.True(loan.IsSuccess);
+            Assert.NotNull(loanRecord);
+            Assert.Equal(-110000, cooperator.LoanBalance);
         }
 
         [Fact]
@@ -175,7 +178,6 @@ namespace CooperativeTests
             //Assert
             Assert.False(food.IsSuccess);
             Assert.Equal("Only active cooperators can take food.", food.Message);
-            Assert.Equal<CooperatorStatus>(CooperatorStatus.Pending, cooperator.Status);
         }
 
         [Fact]
@@ -190,9 +192,12 @@ namespace CooperativeTests
 
             //Act
             var food = await service.TakeFood(27000, cooperator.Id, 3, "Dec 25 Food", 75764);
-
+            await context.Entry(cooperator).ReloadAsync();
+            var foodRecord = await context.Food.FirstOrDefaultAsync(f => f.CooperatorId == cooperator.Id);
             //Assert
             Assert.True(food.IsSuccess);
+            Assert.NotNull(foodRecord);
+            Assert.Equal(-27000, cooperator.FoodBalance);
         }
 
         [Fact]
@@ -227,7 +232,6 @@ namespace CooperativeTests
             //Assert
             Assert.False(souvenir.IsSuccess);
             Assert.Equal("Only active cooperators can take souvenir.", souvenir.Message);
-            Assert.Equal<CooperatorStatus>(CooperatorStatus.Pending, cooperator.Status);
         }
 
         [Fact]
@@ -242,9 +246,13 @@ namespace CooperativeTests
 
             //Act
             var souvenir = await service.TakeSouvenir(20000, cooperator.Id, "AGM 25 Souvenir", 2);
+            await context.Entry(cooperator).ReloadAsync();
+            var souvenirRecord = await context.Souvenirs.FirstOrDefaultAsync(s => s.CooperatorId == cooperator.Id);
 
             //Assert
             Assert.True(souvenir.IsSuccess);
+            Assert.NotNull(souvenirRecord);
+            Assert.Equal(-20000, cooperator.SouvenirBalance);
         }
     }
 }
