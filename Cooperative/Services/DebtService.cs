@@ -62,7 +62,6 @@ namespace Cooperative.Services
                 TotalRepayable = totalRepayable,
                 MonthlyInstallment = monthlyRepayment,
                 DateTaken = DateTime.Now,
-                InstallmentsRemaining = 11,
                 LoanTransactionType = transactionType
             };
             cooperator.LoanBalance = -totalRepayable;

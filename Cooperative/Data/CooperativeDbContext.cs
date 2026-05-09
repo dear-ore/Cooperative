@@ -14,5 +14,6 @@ namespace Cooperative.Data
         public DbSet<Loan> Loans { get; set;  }
         public DbSet<Food> Food { get; set; }
         public DbSet<Souvenir> Souvenirs { get; set; }
+        public DbSet<Repayment> Repayments { get; set; }
     }
 }

@@ -114,7 +114,6 @@ namespace CooperativeTests
                 TotalRepayable = 11000,
                 MonthlyInstallment = 1000,
                 DateTaken = DateTime.Now.AddMonths(-1),
-                InstallmentsRemaining = 11,
                 LoanTransactionType = TransactionType.BankTransfer
             };
             context.Add(loan);
