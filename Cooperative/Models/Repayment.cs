@@ -1,4 +1,7 @@
-﻿namespace Cooperative.Models
+﻿using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cooperative.Models
 {
     public enum PaymentMethod
     {
@@ -13,8 +16,14 @@
         public int MyProperty { get; set; }
         public PaymentMethod DeductionMethod { get; set; }
         public DateTime DateOfRepayment { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? LoanRepaymentAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? FoodRepaymentAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? SouvenirRepaymentAmount { get; set; }
     }
 }
