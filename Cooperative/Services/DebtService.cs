@@ -42,7 +42,7 @@ namespace Cooperative.Services
                 };
             }
 
-            if (await _context.Loans.AnyAsync(l => l.CooperatorId == cooperatorId && l.TotalRepayable > 0))
+            if (cooperator.LoanBalance < 0)
             {
                 return new ServiceResult
                 {
@@ -159,6 +159,96 @@ namespace Cooperative.Services
             {
                 IsSuccess = true,
                 Message = "Souvenir recorded successfully!"
+            };
+        }
+        public async Task<ServiceResult> MakeRepayment(decimal? loanamount, decimal? souveniramount, decimal? foodamount, int cooperatorId, PaymentMethod paymentmethod, int receiptNumber)
+        {
+            if ((loanamount == null || loanamount <= 0) &&
+                (souveniramount == null || souveniramount <= 0) &&
+                (foodamount == null || foodamount <= 0))
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "At least one repayment amount must be provided."
+                };
+            }
+
+            var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
+            if (cooperator == null)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Cooperator not found."
+                };
+            }
+
+            if (cooperator.Status != CooperatorStatus.Active)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Only active cooperators can make repayments."
+                };
+            }
+           
+            if (loanamount != null && loanamount > 0)
+            {
+                if(loanamount > Math.Abs(cooperator.LoanBalance))
+                {
+                    return new ServiceResult
+                    {
+                        IsSuccess = false,
+                        Message = "Repayment amount exceeds outstanding loan balance."
+                    };
+                }
+                cooperator.LoanBalance += loanamount.Value;
+            }
+
+            if (souveniramount != null && souveniramount > 0)
+            {
+                if(souveniramount.Value > Math.Abs(cooperator.SouvenirBalance))
+                {
+                    return new ServiceResult
+                    {
+                        IsSuccess = false,
+                        Message = "Repayment amount exceeds outstanding souvenir balance."
+                    };
+                }
+                cooperator.SouvenirBalance += souveniramount.Value;
+            }
+
+            if (foodamount != null && foodamount > 0)
+            {
+                if(foodamount.Value > Math.Abs(cooperator.FoodBalance))
+                {
+                    return new ServiceResult
+                    {
+                        IsSuccess = false,
+                        Message = "Repayment amount exceeds outstanding food balance."
+                    };
+                }
+                cooperator.FoodBalance += foodamount.Value;
+            }
+
+            var repayment = new Repayment
+            {
+                CooperatorId = cooperatorId,
+                ReceiptNumber = receiptNumber,
+                DeductionMethod = paymentmethod,
+                DateOfRepayment = paymentmethod == PaymentMethod.Bank ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15) : new DateTime(DateTime.Now.Year, DateTime.Now.Month, 17),
+                LoanRepaymentAmount = loanamount,
+                SouvenirRepaymentAmount = souveniramount,
+                FoodRepaymentAmount = foodamount
+            };
+            await _context.AddAsync(repayment);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResult
+            {
+                IsSuccess = true,
+                Message = "Repayment recorded successfully!"
             };
         }
     }

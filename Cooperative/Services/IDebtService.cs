@@ -8,5 +8,6 @@ namespace Cooperative.Services
         public Task<ServiceResult> TakeLoan(decimal amount, int cooperatorId, TransactionType transactionType);
         public Task<ServiceResult> TakeFood(decimal amount, int cooperatorId, int numberOfInstallments, string description, int receiptNumber);
         public Task<ServiceResult> TakeSouvenir(decimal amount, int cooperatorId, string description, int numberOfInstallments);
+        public Task<ServiceResult> MakeRepayment(decimal? loanamount, decimal? souveniramount, decimal? foodamount, int cooperatorId, PaymentMethod paymentmethod, int receiptNumber);
     }
 }

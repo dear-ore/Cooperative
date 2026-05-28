@@ -31,7 +31,6 @@ namespace Cooperative.Models
         public string? SimilarSocietyDetails { get; set; }
         public string MaritalStatus { get; set; }
         public DateTime MembershipCommencementDate { get; set; }
-
         public CooperatorStatus Status { get; set;  }
 
         [Column(TypeName = "decimal(18,2)")]

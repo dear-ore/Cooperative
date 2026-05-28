@@ -16,5 +16,7 @@ namespace Cooperative.Models
         public DateTime DateTaken { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal MonthlyInstallment { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Balance { get; set; }
     }
 }

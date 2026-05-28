@@ -23,5 +23,6 @@ namespace Cooperative.Models
         public decimal MonthlyInstallment { get; set; }
 
         public DateTime DateTaken { get; set; }
+        
     }
 }
