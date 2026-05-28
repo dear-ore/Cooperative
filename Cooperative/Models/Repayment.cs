@@ -11,9 +11,8 @@ namespace Cooperative.Models
     public class Repayment
     {
         public int Id { get; set; }
-        public int CooperativeId { get; set; }
+        public int CooperatorId { get; set; }
         public int ReceiptNumber { get; set; }
-        public int MyProperty { get; set; }
         public PaymentMethod DeductionMethod { get; set; }
         public DateTime DateOfRepayment { get; set; }
 
