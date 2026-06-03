@@ -188,15 +188,6 @@ namespace Cooperative.Services
                 };
             }
 
-            if(loan == null && loanamount.HasValue)
-            {
-                return new ServiceResult
-                {
-                    IsSuccess = false,
-                    Message = "Loan Record not found."
-                };
-            }
-
             if (cooperator.Status != CooperatorStatus.Active)
             {
                 return new ServiceResult
@@ -205,7 +196,16 @@ namespace Cooperative.Services
                     Message = "Only active cooperators can make repayments."
                 };
             }
-           
+
+            if (loan == null && loanamount.HasValue)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Loan Record not found."
+                };
+            }
+
             if (loanamount != null && loanamount > 0)
             {
                 if(loanamount.Value > Math.Abs(cooperator.LoanBalance))

@@ -32,8 +32,9 @@ namespace CooperativeTests
                 SouvenirBalance = 0,
                 OtherBalance = 0
 
-            };
+            };   
         }
+
         private CooperativeDbContext CreateDbContext()
         {
             var dbName = $"CoopTest_{Guid.NewGuid()}";
@@ -254,6 +255,189 @@ namespace CooperativeTests
             Assert.Equal(-20000, cooperator.SouvenirBalance);
         }
 
-        
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenAllAmountsAreNull()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var repayment = await service.MakeRepayment(null, null, null, cooperator.Id, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenAllAmountsAreLessThanZero()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var repayment = await service.MakeRepayment(-12, -13, -17000, cooperator.Id, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenOneAmountsIsLessThanZero()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var repayment = await service.MakeRepayment(-12, null, 17000, cooperator.Id, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenCooperator_NotFound()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+
+            //Act
+            var repayment = await service.MakeRepayment(10000, 23000, 5000, 54, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Cooperator not found.", repayment.Message);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenCooperator_NotActive()
+        {
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(status: CooperatorStatus.Inactive);
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var repayment = await service.MakeRepayment(10000, 20000, 7000, cooperator.Id, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Only active cooperators can make repayments.", repayment.Message);
+        }
+
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenLoanRecord_NotFound()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            //Act
+            var repayment = await service.MakeRepayment(10000, 20000, 7000, cooperator.Id, PaymentMethod.Bank, 12345);
+
+            //Assert
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Loan Record not found.", repayment.Message);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenLoanAmountExceedsOutstandingBalance()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+
+            await context.Entry(cooperator).ReloadAsync();
+            var loan = await service.TakeLoan(20000, cooperator.Id, TransactionType.Cheque);
+            var loanRecord = await context.Loans.FirstOrDefaultAsync(l => l.CooperatorId == cooperator.Id);
+            var repayment = await service.MakeRepayment(25000, null, null, cooperator.Id, PaymentMethod.Management, 56789);
+
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Repayment amount exceeds outstanding loan balance.", repayment.Message);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenSouvenirAmountExceedsOutstandingBalance()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+            //Act
+            await context.Entry(cooperator).ReloadAsync();
+            var souvenir = await service.TakeSouvenir(20000, cooperator.Id, "AGM 25 Souv", 2);
+            var souvenirRecord = await context.Souvenirs.FirstOrDefaultAsync(s => s.CooperatorId == cooperator.Id);
+            var repayment = await service.MakeRepayment(null, 20500, null, cooperator.Id, PaymentMethod.Management, 56789);
+            //Assert
+            Assert.NotNull(souvenirRecord);
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Repayment amount exceeds outstanding souvenir balance.", repayment.Message);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsFalse_WhenFoodAmountExceedsOutstandingBalance()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+            //Act
+            await context.Entry(cooperator).ReloadAsync();
+            var food = await service.TakeFood(20000, cooperator.Id, 3, "Dec 25 Food", 201987);
+            var foodRecord = await context.Food.FirstOrDefaultAsync(s => s.CooperatorId == cooperator.Id);
+            var repayment = await service.MakeRepayment(null, null, 20001, cooperator.Id, PaymentMethod.Management, 56789);
+            //Assert
+            Assert.NotNull(foodRecord);
+            Assert.False(repayment.IsSuccess);
+            Assert.Equal("Repayment amount exceeds outstanding food balance.", repayment.Message);
+        }
+
+        [Fact]
+        public async Task MakeRepayment_IsSuccessIsTrue_WhenAllConditionsAreMet()
+        {
+            //Arrange
+            var context = CreateDbContext();
+            var service = new Cooperative.Services.DebtService(context);
+            var cooperator = CreateTestCooperator(startDate: DateTime.Now.AddMonths(-8));
+            context.Add(cooperator);
+            await context.SaveChangesAsync();
+            //Act
+            var loan = await service.TakeLoan(20000, cooperator.Id, TransactionType.Cheque);
+            var food = await service.TakeFood(20000, cooperator.Id, 3, "Dec 25 Food", 201987);
+            var souvenir = await service.TakeSouvenir(20000, cooperator.Id, "AGM 25 Souv", 2);
+            var repayment = await service.MakeRepayment(10000, 7000, 5000, cooperator.Id, PaymentMethod.Management, 56789);
+            await context.Entry(cooperator).ReloadAsync();
+            //Assert
+            Assert.Equal(-12000, cooperator.LoanBalance);
+            Assert.Equal(-13000, cooperator.SouvenirBalance);
+            Assert.Equal(-15000, cooperator.FoodBalance);
+            Assert.True(repayment.IsSuccess);
+            Assert.Equal("Repayment recorded successfully!", repayment.Message);
+        }
     }
 }
