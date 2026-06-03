@@ -253,5 +253,7 @@ namespace CooperativeTests
             Assert.NotNull(souvenirRecord);
             Assert.Equal(-20000, cooperator.SouvenirBalance);
         }
+
+        
     }
 }

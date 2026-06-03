@@ -15,6 +15,8 @@ namespace Cooperative.Services
         public async Task<ServiceResult> TakeLoan(decimal amount, int cooperatorId, TransactionType transactionType)
         {
             var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
+            var loanRecord = await _context.Loans.FirstOrDefaultAsync(l => l.CooperatorId == cooperatorId);
+
             if (cooperator == null)
             {
                 return new ServiceResult
@@ -42,12 +44,12 @@ namespace Cooperative.Services
                 };
             }
 
-            if (cooperator.LoanBalance < 0)
+            if (loanRecord != null && loanRecord.TotalRepayable > 0)
             {
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator already has an outstanding loan."
+                    Message = "An outstanding loan already exists for this cooperator."
                 };
             }
 
@@ -72,7 +74,7 @@ namespace Cooperative.Services
             {
                 IsSuccess = true,
                 Message = "Loan taken successfully."
-            };
+            };            
         }
         public async Task<ServiceResult> TakeFood(decimal amount, int cooperatorId, int numberofinstallments, string description, int receiptNumber)
         {
@@ -109,7 +111,7 @@ namespace Cooperative.Services
             };
 
             cooperator.FoodBalance = -amount;
-            await _context.AddAsync(food);
+            await _context.Food.AddAsync(food);
             await _context.SaveChangesAsync();
 
             return new ServiceResult
@@ -152,7 +154,7 @@ namespace Cooperative.Services
             };
 
             cooperator.SouvenirBalance = -amount;
-            await _context.AddAsync(souvenir);
+            await _context.Souvenirs.AddAsync(souvenir);
             await _context.SaveChangesAsync();
 
             return new ServiceResult
@@ -175,12 +177,23 @@ namespace Cooperative.Services
             }
 
             var cooperator = await _context.Cooperators.FirstOrDefaultAsync(c => c.Id == cooperatorId);
+            var loan = await _context.Loans.FirstOrDefaultAsync(l => l.CooperatorId == cooperatorId);
+            
             if (cooperator == null)
             {
                 return new ServiceResult
                 {
                     IsSuccess = false,
                     Message = "Cooperator not found."
+                };
+            }
+
+            if(loan == null && loanamount.HasValue)
+            {
+                return new ServiceResult
+                {
+                    IsSuccess = false,
+                    Message = "Loan Record not found."
                 };
             }
 
@@ -195,7 +208,7 @@ namespace Cooperative.Services
            
             if (loanamount != null && loanamount > 0)
             {
-                if(loanamount > Math.Abs(cooperator.LoanBalance))
+                if(loanamount.Value > Math.Abs(cooperator.LoanBalance))
                 {
                     return new ServiceResult
                     {
@@ -204,6 +217,7 @@ namespace Cooperative.Services
                     };
                 }
                 cooperator.LoanBalance += loanamount.Value;
+                loan.TotalRepayable -= loanamount.Value;
             }
 
             if (souveniramount != null && souveniramount > 0)
@@ -242,7 +256,7 @@ namespace Cooperative.Services
                 SouvenirRepaymentAmount = souveniramount,
                 FoodRepaymentAmount = foodamount
             };
-            await _context.AddAsync(repayment);
+            await _context.Repayments.AddAsync(repayment);
             await _context.SaveChangesAsync();
 
             return new ServiceResult
