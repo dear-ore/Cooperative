@@ -17,8 +17,8 @@ namespace Cooperative.Controllers
             _service = service;
         }
 
-        [HttpPost("Take-Loan")]
-        public async Task<IActionResult> TakeLoan([FromBody] TakeLoanDto request)
+        [HttpPost("Loan")]
+        public async Task<ActionResult> TakeLoan([FromBody] TakeLoanDto request)
         {
             var result = await _service.TakeLoan(
                 request.Amount,
@@ -31,11 +31,11 @@ namespace Cooperative.Controllers
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return StatusCode(result.StatusCode, result.Message);
         }
 
-        [HttpPost("Take-Food")]
-        public async Task<IActionResult> TakeFood([FromBody] TakeFoodDto request)
+        [HttpPost("Food")]
+        public async Task<ActionResult> TakeFood([FromBody] TakeFoodDto request)
         {
             var result = await _service.TakeFood(
                 request.Amount,
@@ -50,11 +50,11 @@ namespace Cooperative.Controllers
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return StatusCode(result.StatusCode, result.Message);
         }
 
-        [HttpPost("Take-Souvenir")]
-        public async Task<IActionResult> TakeSouvenir([FromBody] TakeSouvenirDto request)
+        [HttpPost("Souvenir")]
+        public async Task<ActionResult> TakeSouvenir([FromBody] TakeSouvenirDto request)
         {
             var result = await _service.TakeSouvenir(
                 request.Amount,
@@ -68,11 +68,11 @@ namespace Cooperative.Controllers
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return StatusCode(result.StatusCode, result.Message);
         }
 
-        [HttpPost("Make-Repayment")]
-        public async Task<IActionResult> MakeRepayment([FromBody] MakeRepaymentDto request)
+        [HttpPost("Repayment")]
+        public async Task<ActionResult> MakeRepayment([FromBody] MakeRepaymentDto request)
         {
             var result = await _service.MakeRepayment(
                 request.LoanAmount,
@@ -89,8 +89,7 @@ namespace Cooperative.Controllers
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
-        }
-            
+            return StatusCode(result.StatusCode, result.Message);
+        }        
     }
 }

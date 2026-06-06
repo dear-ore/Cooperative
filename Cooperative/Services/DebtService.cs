@@ -1,6 +1,7 @@
 ﻿using Cooperative.Helpers;
 using Cooperative.Data;
 using Cooperative.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cooperative.Services
@@ -22,7 +23,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator not found."
+                    Message = "Cooperator not found.",
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -31,7 +33,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Only active cooperators can take loans."
+                    Message = "Only active cooperators can take loans.",
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
@@ -40,7 +43,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator must have been a member for at least 6 months to take a loan."
+                    Message = "Cooperator must have been a member for at least 6 months to take a loan.",
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
@@ -49,7 +53,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "An outstanding loan already exists for this cooperator."
+                    Message = "An outstanding loan already exists for this cooperator.",
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
@@ -73,7 +78,8 @@ namespace Cooperative.Services
             return new ServiceResult
             {
                 IsSuccess = true,
-                Message = "Loan taken successfully."
+                Message = "Loan taken successfully.",
+                StatusCode = StatusCodes.Status200OK
             };            
         }
         public async Task<ServiceResult> TakeFood(decimal amount, int cooperatorId, int numberofinstallments, string description, int receiptNumber)
@@ -84,7 +90,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator not found."
+                    Message = "Cooperator not found.",
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -93,7 +100,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Only active cooperators can take food."
+                    Message = "Only active cooperators can take food.",
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
@@ -117,7 +125,8 @@ namespace Cooperative.Services
             return new ServiceResult
             {
                 IsSuccess = true,
-                Message = "Food recorded successfully!"
+                Message = "Food recorded successfully!",
+                StatusCode = StatusCodes.Status200OK
             };
         }
         public async Task<ServiceResult> TakeSouvenir(decimal amount, int cooperatorId, string description, int numberofInstallments)
@@ -128,7 +137,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator not found."
+                    Message = "Cooperator not found.",
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -137,7 +147,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Only active cooperators can take souvenir."
+                    Message = "Only active cooperators can take souvenir.",
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
@@ -160,7 +171,8 @@ namespace Cooperative.Services
             return new ServiceResult
             {
                 IsSuccess = true,
-                Message = "Souvenir recorded successfully!"
+                Message = "Souvenir recorded successfully!",
+                StatusCode = StatusCodes.Status200OK
             };
         }
         public async Task<ServiceResult> MakeRepayment(decimal? loanamount, decimal? souveniramount, decimal? foodamount, int cooperatorId, PaymentMethod paymentmethod, int receiptNumber)
@@ -172,7 +184,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "At least one repayment amount must be provided."
+                    Message = "At least one repayment amount must be provided.",
+                    StatusCode = StatusCodes.Status400BadRequest,
                 };
             }
 
@@ -184,7 +197,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Cooperator not found."
+                    Message = "Cooperator not found.",
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -193,7 +207,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Only active cooperators can make repayments."
+                    Message = "Only active cooperators can make repayments.",
+                    StatusCode = StatusCodes.Status400BadRequest,
                 };
             }
 
@@ -202,7 +217,8 @@ namespace Cooperative.Services
                 return new ServiceResult
                 {
                     IsSuccess = false,
-                    Message = "Loan Record not found."
+                    Message = "Loan Record not found.",
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -213,7 +229,8 @@ namespace Cooperative.Services
                     return new ServiceResult
                     {
                         IsSuccess = false,
-                        Message = "Repayment amount exceeds outstanding loan balance."
+                        Message = "Repayment amount exceeds outstanding loan balance.",
+                        StatusCode = StatusCodes.Status400BadRequest,
                     };
                 }
                 cooperator.LoanBalance += loanamount.Value;
@@ -227,7 +244,8 @@ namespace Cooperative.Services
                     return new ServiceResult
                     {
                         IsSuccess = false,
-                        Message = "Repayment amount exceeds outstanding souvenir balance."
+                        Message = "Repayment amount exceeds outstanding souvenir balance.",
+                        StatusCode = StatusCodes.Status400BadRequest,
                     };
                 }
                 cooperator.SouvenirBalance += souveniramount.Value;
@@ -240,7 +258,8 @@ namespace Cooperative.Services
                     return new ServiceResult
                     {
                         IsSuccess = false,
-                        Message = "Repayment amount exceeds outstanding food balance."
+                        Message = "Repayment amount exceeds outstanding food balance.",
+                        StatusCode = StatusCodes.Status400BadRequest,
                     };
                 }
                 cooperator.FoodBalance += foodamount.Value;
@@ -262,7 +281,8 @@ namespace Cooperative.Services
             return new ServiceResult
             {
                 IsSuccess = true,
-                Message = "Repayment recorded successfully!"
+                Message = "Repayment recorded successfully!",
+                StatusCode = StatusCodes.Status200OK
             };
         }
     }
