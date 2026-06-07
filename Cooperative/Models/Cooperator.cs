@@ -17,10 +17,10 @@ namespace Cooperative.Models
         public string Name { get; set; }
 
         [Required]
-        public string CoopNumber { get; set; }
+        public int CoopNumber { get; set; }
 
         [Required]
-        public string StaffNumber { get; set; }
+        public int StaffNumber { get; set; }
 
         [Required]
         public string Factory { get; set; }

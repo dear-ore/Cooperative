@@ -14,8 +14,8 @@ namespace CooperativeTests
             {
                 Name = "Test User",
                 Status = status,
-                CoopNumber = "123",
-                StaffNumber = "12345",
+                CoopNumber = 123,
+                StaffNumber = 12345,
                 Factory = "Yale 5",
                 Department = "Manufacturing",
                 PostHeld = "Parker",

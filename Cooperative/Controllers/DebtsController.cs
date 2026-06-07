@@ -26,11 +26,6 @@ namespace Cooperative.Controllers
                 request.Transaction
             );
 
-            if(result.IsSuccess)
-            {
-                return Ok(result.Message);
-            }
-
             return StatusCode(result.StatusCode, result.Message);
         }
 
@@ -45,11 +40,6 @@ namespace Cooperative.Controllers
                 request.ReceiptNumber
             );
 
-            if (result.IsSuccess)
-            {
-                return Ok(result.Message);
-            }
-
             return StatusCode(result.StatusCode, result.Message);
         }
 
@@ -62,11 +52,6 @@ namespace Cooperative.Controllers
                 request.Description,
                 request.NumberOfInstallments
             );
-
-            if (result.IsSuccess)
-            {
-                return Ok(result.Message);
-            }
 
             return StatusCode(result.StatusCode, result.Message);
         }
@@ -81,15 +66,9 @@ namespace Cooperative.Controllers
                 request.Id,
                 request.PayMethod,
                 request.ReceiptNumber
-
             );
 
-            if (result.IsSuccess)
-            {
-                return Ok(result.Message);
-            }
-
             return StatusCode(result.StatusCode, result.Message);
-        }        
+        }
     }
 }
