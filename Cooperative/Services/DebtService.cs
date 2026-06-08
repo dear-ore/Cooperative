@@ -278,12 +278,30 @@ namespace Cooperative.Services
             await _context.Repayments.AddAsync(repayment);
             await _context.SaveChangesAsync();
 
+            var repaymentTypes = new List<string>();
+            if (loanamount.HasValue && loanamount > 0)
+                repaymentTypes.Add("Loan");
+            if (foodamount.HasValue && foodamount > 0)
+                repaymentTypes.Add("Food");
+            if (souveniramount.HasValue && souveniramount > 0)
+                repaymentTypes.Add("Souvenir");
+
+            string message = repaymentTypes.Count switch
+            {
+                1 => $"{repaymentTypes[0]} Repayment recorded successfully",
+                2 => $"{repaymentTypes[0]} and {repaymentTypes[1]} Repayment recorded successfully",
+                3 => $"{repaymentTypes[0]}, {repaymentTypes[1]}, and {repaymentTypes[2]} Repayment recorded successfully",
+                _ => "Repayment recorded successfully!"
+            };
+
             return new ServiceResult
             {
                 IsSuccess = true,
-                Message = "Repayment recorded successfully!",
+                Message = message,
                 StatusCode = StatusCodes.Status200OK
             };
+
+             
         }
     }
 }
