@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IDebtService, DebtService>();
+builder.Services.AddScoped<IContributionService, ContributionService>();
 builder.Services.AddDbContext<CooperativeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

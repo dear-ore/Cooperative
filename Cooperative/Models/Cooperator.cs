@@ -56,6 +56,9 @@ namespace Cooperative.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal OtherBalance { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal SavingsBalance { get; set; }
     }
 }
 
