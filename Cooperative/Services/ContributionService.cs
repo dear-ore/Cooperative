@@ -96,6 +96,16 @@ namespace Cooperative.Services
 
             cooperator.SavingsBalance = currentSavings + (savingsamount ?? 0);
 
+            var contribution = new Contribution
+            {
+                CooperatorId = cooperatorId,
+                SavingsAmount = savingsamount ?? 0,
+                InvestmentAmount = investmentamount ?? 0,
+                SharesAmount = sharesamount ?? 0,
+                BuildingFundAmount = buildingamount ?? 0,
+                DateRecorded = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)
+            };
+            await _context.Contributions.AddAsync(contribution);
             await _context.SaveChangesAsync();
 
             return new ServiceResult
